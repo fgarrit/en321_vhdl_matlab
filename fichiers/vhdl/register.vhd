@@ -19,10 +19,19 @@ begin
       oData <= (others =>'0');
    elsif(iClock'EVENT and iClock = '1')   then
       if (iEN= '1') then
-         oData <= iData;      
+         oData <= iData;    
       end if;   
    end if;
 end process;   
+
+process(iClock, iReset)
+begin
+   if(iReset = '1')   then
+      oDataValid <= '0';
+   elsif(iClock'EVENT and iClock = '1')   then
+      oDataValid <= iEN;      
+   end if;
+end process;  
 
 
 end Behavioral;
