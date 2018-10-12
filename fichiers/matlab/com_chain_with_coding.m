@@ -6,6 +6,8 @@
 clear all;
 close all;
 
+instrreset;
+
 %%%%%%%%%%%
 %% INITIALIZATION
 %%%%%%%%%%%
@@ -35,7 +37,7 @@ sprintf('SNR at the receiver side : %d dB',Prx_dB-N0dB)
 
 NFFT=64;
 % bch_k=52; % sub-carrier number
-c
+
 %W=bch_k/NFFT*Fe; % transmitted signal bandwidth
 
 nb=2; % number of bits per symbol
@@ -48,6 +50,7 @@ type_mod='psk';
 L=30; % size of the channel
 freq_axis = [-1/(2*Te):1/(NFFT*Te):1/(2*Te)-1/(NFFT*Te)];
 noise_variance=N0; % noise variance
+
 
 %% Scrambler parameters
 scramb_polynomial=[1 1 1 0 1];
@@ -118,7 +121,7 @@ U_soft_size=length(U_soft);
 
 %% Padding for the BCH encoder and the interleaver
 
-full_bch_cwd_nb = floor(U_soft_size/bch_k) + 200
+full_bch_cwd_nb = floor(U_soft_size/bch_k)
 bch_cwd_nb = (full_bch_cwd_nb +1) + (intlvr_line_nb-1);
 
 intlvr_pad_bit_nb = bch_k * intlvr_reg_size * (intlvr_line_nb - 1); % after BCH encoding, there is intlvr_line_nb*intlvr_reg_size*(intlvr_line_nb-1) padding bits for the interleaver
@@ -132,21 +135,26 @@ padding_bits=zeros(1,total_pad_bit_nb);
 bch_bit_nb = bch_cwd_nb * bch_n;
 
 V_soft = [U_soft, padding_bits];
+Padding = zeros(1,212);
+bch_cwd_nb = bch_cwd_nb + 53;
+V_soft_with_padding = [V_soft Padding];
 V_soft_size = length(V_soft);
+V_soft_with_padding_size = length(V_soft_with_padding);
 
 %% Creation de fichier
-for i=1:V_soft_size
-   fprintf(TB_file_ID,'%d\n',V_soft(i)); 
-end
+% for i=1:V_soft_size
+%    fprintf(TB_file_ID,'%d\n',V_soft(i)); 
+% end
+% fclose(TB_file_ID);
 %% Write UART
-%s = send_UART(V_soft,V_soft_size)
+s = send_UART(V_soft_with_padding,V_soft_with_padding_size)
 
 %% Scrambler
-S_soft=step(Scrambler_U_obj,V_soft.');
+%S_soft=step(Scrambler_U_obj,V_soft_with_padding.');
 
 %% Read UART
-%S_hard=recv_UART(s, V_soft_size);
-%S_soft = S_hard;
+S_hard=recv_UART(s, V_soft_with_padding_size);
+S_soft = S_hard;
 
 %% BCH Encoder
 X_gf_soft = bchenc(gf(reshape(S_soft, bch_k, bch_cwd_nb).',1), bch_n, bch_k); % codeur BCH(bch_n,bch_k)
@@ -159,9 +167,9 @@ P_soft=convintrlv([reshape(X_soft.',1,[])],intlvr_line_nb,intlvr_reg_size);
 C_soft = convenc(P_soft,trellis); 
 
 %% Read UART
-%C_hard = recv_UART(s, bch_bit_nb);
-%C_hard = reshape(de2bi(C_hard)',1,[])
-%C_soft= C_hard
+% C_hard = recv_UART(s, bch_bit_nb);
+% C_hard = reshape(de2bi(C_hard)',1,[])
+% C_soft= C_hard
 
 
 
@@ -191,7 +199,7 @@ IG = zeros(1,LL-1);
 
 for i = 1:(length(symb_utiles)/NFFT)
     symb_OFDM = ifft(symb_utiles(1,(i-1)*NFFT+1:i*NFFT),NFFT);
-    trame_OFDM=[trame_OFDM IG symb_OFDM];
+    trame_OFDM=[trame_OFDM symb_OFDM];
     %trame_OFDM=[trame_OFDM symb_OFDM(1,end-length(IG)+1:end) symb_OFDM];
 end
 
@@ -207,10 +215,10 @@ y = filter(h,1,trame_OFDM);
 %%%--------------------------------------------------------------------%%%%
 %% RECEIVER
 %%%---------------------------------------------------------------------%%%
-noise_variance = 0.2
+noise_variance = 0.001 %0.2
 noise = sqrt(noise_variance/(2))*(randn(size(y))+1i*randn(size(y)));
 z = y + noise; 
-
+%z=y;
 %% OFDM Demodulator 
 symb_estime=[];
 for i=1:(length(z)/NFFT)
@@ -273,14 +281,19 @@ Descrambler_U_obj = comm.Descrambler(2,scramb_polynomial,scramb_init_state);
 
 S_r_soft_Depad=step(Descrambler_U_obj,S_r_soft_Depad.'); % descrambler
 
-BER_U = mean(abs(S_r_soft_Depad-uint8(U_soft')));
+S_r_soft_Depad_final = S_r_soft_Depad(1:10000);
+%%Depadding
+
+BER_U = mean(abs(S_r_soft_Depad_final-uint8(U_soft')));
+
+
 
 %% Image reconstruction
 
 if(data_mode == 'rand_binary_image')
-    imgRx=reshape(S_r_soft_Depad,Nb_ligne_IMG,Nb_colonne_IMG);
+    imgRx=reshape(S_r_soft_Depad_final,Nb_ligne_IMG,Nb_colonne_IMG);
 elseif(data_mode == 'color_image')
-    bitsRx=reshape(S_r_soft_Depad,[],3);
+    bitsRx=reshape(S_r_soft_Depad_final,[],3);
     intRx_R=uint8(bi2de(reshape(bitsRx(:,1),8,[]).','left-msb'));
     intRx_G=uint8(bi2de(reshape(bitsRx(:,2),8,[]).','left-msb'));
     intRx_B=uint8(bi2de(reshape(bitsRx(:,3),8,[]).','left-msb'));
@@ -306,7 +319,6 @@ elseif(data_mode == 'color_image')
     image(imgRx)
 end
 title('Image recue')
-
 subplot 133;
 if(data_mode == 'rand_binary_image')
     imagesc(uint8(img2send)-imgRx)
