@@ -319,7 +319,6 @@ elseif(data_mode == 'color_image')
     image(imgRx)
 end
 title('Image recue')
-
 subplot 133;
 if(data_mode == 'rand_binary_image')
     imagesc(uint8(img2send)-imgRx)
