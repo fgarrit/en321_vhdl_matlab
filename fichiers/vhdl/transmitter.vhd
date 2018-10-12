@@ -52,6 +52,17 @@ port(
    oData      			: out	std_logic);
 end component;
 
+component bch_encoder is
+port(
+   iClock            : in  std_logic;
+   iReset            : in  std_logic;
+   iEN               : in  std_logic;
+   iDataParallel     : in  std_logic_vector(3 downto 0);
+   oDataValid        : out std_logic;
+   oDataParallel     : out std_logic_vector(6 downto 0));
+end component;
+
+
 --component registre is
 --port(
 --   iClock            : in	std_logic;
