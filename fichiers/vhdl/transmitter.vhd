@@ -125,12 +125,19 @@ signal x1, x2 : std_logic;
 
 begin
 
-scramb : scrambler port map(  iClock => clk,
+regis : registre port map(  iClock => clk,
                               iReset => rst,
                               iEN => enable,
-                              iData => stream_in(0),
+                              iData => stream_in,
                               oDataValid => data_valid,--scrambler_out_dv
-                              oData  => stream_out(0));--scrambler_out
+                              oData  => stream_out);--scrambler_out
+
+--scramb : scrambler port map(  iClock => clk,
+--                              iReset => rst,
+--                              iEN => enable,
+--                              iData => stream_in(0),
+--                              oDataValid => data_valid,--scrambler_out_dv
+--                              oData  => stream_out(0));--scrambler_out
  
 --s2p_inst : S2P generic map(width => 4)
 --               port map( clk => clk,
@@ -168,7 +175,7 @@ scramb : scrambler port map(  iClock => clk,
 --                              oDataX => x1,
 --                              oDataY => x2);
 
-stream_out(7 downto 1) <= (others => '0');
+--stream_out(7 downto 1) <= (others => '0');
 
 --stream_out(0) <= x1;
 --stream_out(1) <= x2;

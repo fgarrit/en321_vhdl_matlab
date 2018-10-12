@@ -19,7 +19,7 @@ begin
       oData <= (others =>'0');
    elsif(iClock'EVENT and iClock = '1')   then
       if (iEN= '1') then
-         oDataV <= iData;      
+         oData <= iData;      
       end if;   
    end if;
 end process;   
