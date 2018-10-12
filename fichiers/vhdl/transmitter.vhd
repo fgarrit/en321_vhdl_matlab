@@ -149,6 +149,13 @@ scramb : scrambler port map(  iClock => clk,
                               iData => stream_in(0),
                               oDataValid => data_valid,--scrambler_out_dv
                               oData  => stream_out(0));--scrambler_out
+
+--bch : bch_encoder port map(  iClock => clk,
+--                              iReset => rst,
+--                              iEN => enable,
+--                              iData => stream_in(0),
+--                              oDataValid => data_valid,--scrambler_out_dv
+--                              oData  => stream_out(0));--scrambler_out
  
 --s2p_inst : S2P generic map(width => 4)
 --               port map( clk => clk,
