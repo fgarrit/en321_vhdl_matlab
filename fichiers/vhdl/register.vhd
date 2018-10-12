@@ -1,7 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
-entity register is
+entity registre is
 port(
    iClock            : in  std_logic;
    iReset            : in  std_logic;
@@ -9,10 +9,10 @@ port(
    iData             : in  std_logic_vector(7 downto 0);
    oDataValid        : out std_logic;
    oData             : out std_logic_vector(7 downto 0));
-end register;
+end registre;
 
-architecture Behavioral of register is
-
+architecture Behavioral of registre is
+begin
 process(iClock, iReset)
 begin
    if(iReset = '1')   then

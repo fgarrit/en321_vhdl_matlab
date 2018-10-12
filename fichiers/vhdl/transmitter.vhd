@@ -52,7 +52,7 @@ port(
    oData      			: out	std_logic);
 end component;
 
-component register is
+component registre is
 port(
    iClock            : in	std_logic;
    iReset            : in	std_logic;
