@@ -52,6 +52,16 @@ port(
    oData      			: out	std_logic);
 end component;
 
+component register is
+port(
+   iClock            : in	std_logic;
+   iReset            : in	std_logic;
+   iEN      		 	: in	std_logic;
+   iData           	: in	std_logic_vector(7 downto 0);
+   oDataValid        : out std_logic;
+   oData      			: out	std_logic_vector(7 downto 0));
+end component;
+
 component S2P is
 generic (width: integer := 7);
 port (
