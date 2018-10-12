@@ -10,6 +10,7 @@ s.InputBufferSize = 100000;
 s.OutputBufferSize = 100000;
 fopen(s);
 
+
 for i = 1:size
      fwrite(s,vec(i))
      %pause(0.01) % wait 1ms to let the data arrive to the FPGA
