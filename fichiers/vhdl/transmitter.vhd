@@ -76,52 +76,53 @@ end component;
 component S2P is
 generic (width: integer := 7);
 port (
-	clk : in std_logic;
-	reset : in std_logic;
-	i_data_valid : in std_logic;
-	serial_data : in std_logic;
-	par_data : out std_logic_vector(width-1 downto 0);
-	o_data_valid : out std_logic);
+	clk                  : in std_logic;
+	reset                : in std_logic;
+	i_data_valid         : in std_logic;
+	serial_data          : in std_logic;
+	par_data             : out std_logic_vector(width-1 downto 0);
+	o_data_valid         : out std_logic);
 end component;
 
 component hamenc IS
-   PORT(rst    : in  std_logic;
-        clk    : in  std_logic;
-        i_data : in  std_logic_vector(3 downto 0);
-        i_dv   : in  std_logic;
-        o_data : out std_logic_vector(7 downto 0);
-        o_dv   : out std_logic);
+   PORT(
+    rst                :  in  std_logic;
+    clk                : in  std_logic;
+    i_data             : in  std_logic_vector(3 downto 0);
+    i_dv               : in  std_logic;
+    o_data             : out std_logic_vector(7 downto 0);
+    o_dv               : out std_logic);
 end component;
 
 component P2S is
 generic (width: integer := 4);
 port (
-	clk : in std_logic;
-	reset : in std_logic;
-	load : in std_logic;
-	par_data : in std_logic_vector(width-1 downto 0);
-	serial_data : out std_logic;
-	serial_data_valid : out std_logic);
+	clk                  : in std_logic;
+	reset                : in std_logic;
+	load                 : in std_logic;
+	par_data             : in std_logic_vector(width-1 downto 0);
+	serial_data          : out std_logic;
+	serial_data_valid    : out std_logic);
 end component;
 
 component entrelaceur is
 	port(
-		iClock            : in	std_logic;
-		iReset            : in	std_logic;
-		iEN	    			: in	std_logic;	-- compteur de 0 � 6
-		iData            	: in	std_logic;
-		oData           	: out std_logic
+		iClock             : in	std_logic;
+		iReset             : in	std_logic;
+		iEN	    			     : in	std_logic;	-- compteur de 0 a 6
+		iData            	 : in	std_logic;
+		oData           	 : out std_logic
 	 );
 end component;
 
 component codeur_conv is
 	port(
-		iClock            : in	std_logic;
-		iReset            : in	std_logic;
-		iEN	    			: in	std_logic;
-		iData            	: in	std_logic;
-		oDataX           	: out std_logic;
-		oDataY           	: out std_logic
+		iClock             : in	std_logic;
+		iReset             : in	std_logic;
+		iEN	    			     : in	std_logic;
+		iData            	 : in	std_logic;
+		oDataX           	 : out std_logic;
+		oDataY           	 : out std_logic
 	 );
 end component;
 
@@ -147,15 +148,8 @@ scramb : scrambler port map(  iClock => clk,
                               iReset => rst,
                               iEN => enable,
                               iData => stream_in(0),
-                              oDataValid => data_valid,--scrambler_out_dv
-                              oData  => stream_out(0));--scrambler_out
-
---bch : bch_encoder port map(  iClock => clk,
---                              iReset => rst,
---                              iEN => enable,
---                              iData => stream_in(0),
---                              oDataValid => data_valid,--scrambler_out_dv
---                              oData  => stream_out(0));--scrambler_out
+                              oDataValid => scrambler_out_dv,--scrambler_out_dv
+                              oData  => scrambler_out);--scrambler_out
  
 s2p_inst : S2P generic map(width => 4)
                port map( clk => clk,
@@ -180,24 +174,23 @@ ps2_inst : P2S generic map(width  => 7)
                         serial_data => p2s_out,
                         serial_data_valid => p2s_out_dv);
 
---intrl : entrelaceur port map( iClock => clk,
---                              iReset => rst,
---                              iEN => p2s_out_dv,
---                              iData => p2s_out,
---                              oData => intrl_out);
+intrl : entrelaceur port map( iClock => clk,
+                              iReset => rst,
+                              iEN => p2s_out_dv,
+                              iData => p2s_out,
+                              oData => intrl_out);
                               
---cc : codeur_conv port map(		iClock => clk,
---                              iReset => rst,
---                              iEN => p2s_out_dv,
---                              iData => intrl_out,
---                              oDataX => x1,
---                              oDataY => x2);
+cc : codeur_conv port map(		iClock => clk,
+                              iReset => rst,
+                              iEN => p2s_out_dv,
+                              iData => intrl_out,
+                              oDataX => x1,
+                              oDataY => x2);
 
-stream_out(7 downto 1) <= (others => '0');
+--stream_out(7 downto 1) <= (others => '0');
 
---stream_out(0) <= x1;
---stream_out(1) <= x2;
-
---data_valid <= p2s_out_dv;
+stream_out(0) <= x1;
+stream_out(1) <= x2;
+data_valid <= p2s_out_dv;
 
 end Behavioral;
