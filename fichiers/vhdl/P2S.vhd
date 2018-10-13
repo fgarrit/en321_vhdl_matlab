@@ -18,10 +18,11 @@ architecture Behavioral of P2S is
 begin
 process(clk, reset)
 begin  -- A FAIRE --
-   if(rst = '1')   then
-      serial_data <= (others =>'0');
+   if(reset = '1')   then
+      serial_data <= '0';
+      serial_data_valid <= '0';
    elsif(clk'EVENT and clk = '1')   then
-      if (iEN= '1') then
+      if (load= '1') then
    
       end if;   
    end if;

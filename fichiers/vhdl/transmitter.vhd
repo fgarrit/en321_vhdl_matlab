@@ -54,12 +54,12 @@ end component;
 
 component bch_encoder is
 port(
-   iClock            : in  std_logic;
-   iReset            : in  std_logic;
-   iEN               : in  std_logic;
-   iDataParallel     : in  std_logic_vector(3 downto 0);
-   oDataValid        : out std_logic;
-   oDataParallel     : out std_logic_vector(6 downto 0));
+   rst            : in  std_logic;
+   clk            : in  std_logic;
+   i_data         : in  std_logic_vector(3 downto 0);
+   i_dv           : in  std_logic;
+   o_data         : out std_logic_vector(6 downto 0);
+   o_dv           : out std_logic);
 end component;
 
 
@@ -129,7 +129,7 @@ end component;
 signal scrambler_out_dv, S2P_out_dv, bch_out_dv, p2s_out_dv : std_logic;
 signal scrambler_out : std_logic;
 signal S2P_out : std_logic_vector(3 downto 0);
-signal bch_out : std_logic_vector(7 downto 0);
+signal bch_out : std_logic_vector(6 downto 0);
 signal p2s_out : std_logic;
 signal intrl_out : std_logic;
 signal x1, x2 : std_logic;

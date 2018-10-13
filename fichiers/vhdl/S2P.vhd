@@ -18,10 +18,11 @@ architecture Behavioral of S2P is
 begin
 process(clk, reset)
 begin  -- A FAIRE --
-   if(rst = '1')   then
+   if(reset = '1')   then
       par_data <= (others =>'0');
+      o_data_valid <= '0';
    elsif(clk'EVENT and clk = '1')   then
-      if (iEN= '1') then
+      if (i_data_valid= '1') then
    
       end if;   
    end if;
