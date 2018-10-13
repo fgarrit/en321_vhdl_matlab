@@ -1,4 +1,8 @@
-- Convertisseur S/P et P/S (déjà déclaré dans transmitter)
-- Mettre à jour le transmitter (mapping BCH S/P P/S)
+- Convertisseur S/P et P/S : fichiers vhd créé -> à compléter
+- Transmitter modifié
 - Tester BCH
 - Ajouter block PI
+
+Astuces : 
+- Pour faire un add sur tous les fichiers .vhd qui viennent d'être modifiés : 
+	git add *.vhd

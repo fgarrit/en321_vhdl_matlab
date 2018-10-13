@@ -159,7 +159,7 @@ S_soft = S_hard;
 %% BCH Encoder
 X_gf_soft = bchenc(gf(reshape(S_soft, bch_k, bch_cwd_nb).',1), bch_n, bch_k); % codeur BCH(bch_n,bch_k)
 X_soft = double( X_gf_soft.x );
-a
+
 %% Interleaver
 P_soft=convintrlv([reshape(X_soft.',1,[])],intlvr_line_nb,intlvr_reg_size);
 
