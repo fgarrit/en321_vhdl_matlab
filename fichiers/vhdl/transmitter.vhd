@@ -86,7 +86,7 @@ end component;
 
 component hamenc IS
    PORT(
-    rst                :  in  std_logic;
+    rst                : in  std_logic;
     clk                : in  std_logic;
     i_data             : in  std_logic_vector(3 downto 0);
     i_dv               : in  std_logic;

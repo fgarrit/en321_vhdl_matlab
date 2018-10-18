@@ -18,13 +18,18 @@ begin
    if(rst = '1')   then
       o_dv <= '0';
       o_data <= (others =>'0');
-   elsif(clk'EVENT and clk = '1')   then
-      --if (iEN= '1') then
+   elsif rising_edge(clk) then
+      
+      o_dv <= '0'; -- 0 par défaut
+
+      if (i_dv= '1') then
          o_data(6 downto 3) <= i_data(3 downto 0) ;
          o_data(2) <= i_data(2) xor i_data(1) xor i_data(0) ;
          o_data(1) <= i_data(3) xor i_data(1) xor i_data(0) ;
-         o_data(0) <= i_data(3) xor i_data(2) xor i_data(0) ;    
-      --end if;   
+         o_data(0) <= i_data(3) xor i_data(2) xor i_data(0) ; 
+         o_dv <= '1';
+         
+      end if;   
    end if;
 end process;   
 
