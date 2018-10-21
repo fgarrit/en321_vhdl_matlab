@@ -2,11 +2,12 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity P2S is
+generic (width: integer := 7);
 port( 
       clk                  : in std_logic;
       reset                : in std_logic;
       load                 : in std_logic;
-      par_data             : in std_logic_vector(6 downto 0);
+      par_data             : in std_logic_vector(width-1 downto 0);
       serial_data          : out std_logic;
       serial_data_valid    : out std_logic);
 end P2S;
@@ -24,18 +25,18 @@ begin
 
       elsif rising_edge(clk) then
 
-            o_dv <= '0'; -- 0 par défaut
+            serial_data_valid <= '0'; -- 0 par défaut
 
             if load = '1' then
             cmp <= cmp + 1;
             
             if cmp = 7 then
                cmp <= 0;
-               o_dv <= '1'; -- 4ème bit reçu, les registres sont prêts et la valeur de sortie est juste
+               serial_data_valid <= '1'; -- 7ème bit reçu, les registres sont prêts et la valeur de sortie est juste
 
             end if;
 
-            stock <= stock (2 downto 0) & i_serial_data; -- Registre à décalage
+            stock <= stock (2 downto 0) & serial_data; -- Registre à décalage
 
          end if;
       end if;
