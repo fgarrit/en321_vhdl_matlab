@@ -96,7 +96,7 @@ begin
     if reset = '1' then
         serial_data <= '0';
     elsif load_data ='1' then
-        serial_data <= data_temp(6);
+        serial_data <= stock(6);
     end if;
 end process;
 
