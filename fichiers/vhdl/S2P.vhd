@@ -14,14 +14,14 @@ end S2P;
 
 
 architecture Behavioral of S2P is
-signal cmp : integer := 0;
-signal stock : std_logic_vector(3 downto 0) := (others => '0'); 
+signal cmp      : integer := 0;
+signal stock    : std_logic_vector(3 downto 0) := (others => '0'); 
 begin
 
    process(clk, reset)
    begin
      if (reset = '1')   then
-         par_data <= (others => '0');
+         stock <= (others => '0');
          o_data_valid <= '0';
 
       elsif rising_edge(clk) then

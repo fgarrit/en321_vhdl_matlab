@@ -156,7 +156,7 @@ cc : codeur_conv port map(		iClock => clk,
                               oDataX => x1,
                               oDataY => x2);
 
-stream_out(7 downto 1) <= (others => '0');
+stream_out(7 downto 2) <= (others => '0');
 
 stream_out(0) <= x1;
 stream_out(1) <= x2;
