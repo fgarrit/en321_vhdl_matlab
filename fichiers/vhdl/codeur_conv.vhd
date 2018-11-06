@@ -15,16 +15,22 @@ entity codeur_conv is
 end codeur_conv;
 
 architecture Behavioral of codeur_conv is
-begin  -- A FAIRE --
-   process (iClock, iReset) begin
-      if (rising_edge(iClock)) then
-         if (iReset = '1') then
-            oDataX <= '0';
-            oDataY <= '0';
-         elsif(iEN = '1') then
-          
-         end if;
-      end if;
-   end process;
-end Behavioral;
+signal registre        : std_logic_vector(1 downto 0);
+signal s_dataX    : std_logic;
+signal s_dataY    : std_logic;
+begin 
+process(iClock, iReset)
+begin
+   if(iReset = '1')  then
+     registre <= (others=>'0');
+   elsif(iClock'EVENT and iClock = '1')   then
+      if(iEN = '1')  then
+         registre <= iData & registre(1) ;
+      end if;        
+   end if;
+end process;
 
+   oDataX <= iData  xor registre(0);
+   oDataY <= registre(1) xor registre(0); 
+
+end Behavioral;
