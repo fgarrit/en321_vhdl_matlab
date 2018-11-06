@@ -14,7 +14,7 @@ end p2s;
 architecture Behavioral of p2s is
 
 signal Cnt                 : integer range 0 to 9 := 0 ;
-signal cnt_horloge         : unsigned (3 downto 0) ;
+signal cnt_horloge         : integer range 0 to 6 ; ---------------
 signal start_cnt_h         : std_logic ;
 signal load_data           : std_logic;
 signal cnt_load            : integer range 0 to 6 := 0 ;
@@ -42,10 +42,10 @@ end process;
 Process (reset, clk)
 begin
     if reset = '1' then
-        cnt_horloge <= (others => '0');
+        cnt_horloge <= 0;
     elsif clk'event and clk = '1' then
         if load = '1' then 
-            cnt_horloge <= (others => '0');
+            cnt_horloge <= 0;
         elsif start_cnt_h = '1' then
             cnt_horloge <= cnt_horloge + 1 ; 
         end if;
