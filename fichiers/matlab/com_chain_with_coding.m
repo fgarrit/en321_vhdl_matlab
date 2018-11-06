@@ -68,17 +68,6 @@ intlvr_reg_size=1; % number of bits per register
 %% Convolutionnal encoder parameters 
 trellis = poly2trellis(3,[5 3]); % generator polynomial : (15,13)
 
-%% [AJOUT] MAC
-% if type_mod=='psk'
-%     type_mod_bin = 1;
-% elseif type_mod=='qam'
-%     type_mode_bin = 0;
-% else
-%     sprintf('Erreur modulation inconnue')
-%     s=[];
-% end
-% mac = [type_mode_bin 
-
 
 %% Data reading/generation
 
@@ -92,11 +81,11 @@ if(data_mode == 'rand_binary_image')
     Nb_colonne_IMG=100;
     U_soft_size=Nb_ligne_IMG*Nb_colonne_IMG;   % nombre de bits utiles codés
     % génération aléatoire de donn?es binaires
-    rng(654354)
+    rng(654354);
     tmp=(randi(2,U_soft_size)-1);
-    U_soft = tmp(1,:)
+    U_soft = tmp(1,:);
     % on place les données dans une matrice qui sera affichée comme une image
-    img2send=reshape(U_soft,Nb_ligne_IMG,Nb_colonne_IMG)
+    img2send=reshape(U_soft,Nb_ligne_IMG,Nb_colonne_IMG);
     
 elseif(data_mode == 'color_image')
     
@@ -134,10 +123,33 @@ sprintf('Nb of padding bits for the last BCH codeword + interleaver: %d',total_p
 padding_bits=zeros(1,total_pad_bit_nb);
 bch_bit_nb = bch_cwd_nb * bch_n;
 
+
+
+
+%% [AJOUT] MAC
+if type_mod=='psk'
+    type_mod_bin = 1;
+elseif type_mod=='qam'
+    type_mod_bin = 0;
+else
+    sprintf('Erreur modulation inconnue')
+    s=[];
+end
+
+nb_bin = de2bi(nb,3,'left-msb');
+%padd_bin = de2bi(padding,11,'left-msb');
+intlvr_pad_bit_nb_bin = de2bi(intlvr_pad_bit_nb,10,'left-msb');
+
+%mac = [type_mod_bin b0_b2 padd_bin intlvr_pad_bit_nb_bin] %[1 3 11 10] 25bits de MAC
+%length(mac);
+
+%%
+
 V_soft = [U_soft, padding_bits];
-Padding = zeros(1,212);
-bch_cwd_nb = bch_cwd_nb + 53;
-V_soft_with_padding = [V_soft Padding];
+%bch_cwd_nb = bch_cwd_nb + 53;
+%Padding = zeros(1,padding);
+%V_soft_with_padding = [V_soft Padding];
+V_soft_with_padding = V_soft;
 V_soft_size = length(V_soft);
 V_soft_with_padding_size = length(V_soft_with_padding);
 
@@ -147,14 +159,14 @@ V_soft_with_padding_size = length(V_soft_with_padding);
 % end
 % fclose(TB_file_ID);
 %% Write UART
-s = send_UART(V_soft_with_padding,V_soft_with_padding_size)
+%s = send_UART(V_soft_with_padding,V_soft_with_padding_size)
 
 %% Scrambler
-%S_soft=step(Scrambler_U_obj,V_soft_with_padding.');
+S_soft=step(Scrambler_U_obj,V_soft_with_padding.');
 
 %% Read UART
-S_hard=recv_UART(s, V_soft_with_padding_size);
-S_soft = S_hard;
+%S_hard=recv_UART(s, V_soft_with_padding_size);
+%S_soft = S_hard;
 
 %% BCH Encoder
 X_gf_soft = bchenc(gf(reshape(S_soft, bch_k, bch_cwd_nb).',1), bch_n, bch_k); % codeur BCH(bch_n,bch_k)
@@ -165,6 +177,19 @@ P_soft=convintrlv([reshape(X_soft.',1,[])],intlvr_line_nb,intlvr_reg_size);
 
 %% Convolutionnal Encoder
 C_soft = convenc(P_soft,trellis); 
+
+%% Calcul padding AJOUTER LONGEUR MAC
+padding = 0;
+
+%bch_cwd_nb = bch_cwd_nb + 25; %Ajout MAC
+while(mod(length(C_soft)+padding,NFFT) ~= 0 || mod(length(C_soft)+padding,NFFT*nb) ~= 0)
+    %bch_cwd_nb = bch_cwd_nb +1;
+    padding = padding + 1;
+end
+
+padding_add = zeros(1,padding);
+
+C_soft = [C_soft padding_add];
 
 %% Read UART
 % C_hard = recv_UART(s, bch_bit_nb);
@@ -190,6 +215,8 @@ else
 end
 
 %% OFDM Modulator 
+ 
+%symb_utiles = [symb_utiles mac];
 trame_OFDM=[];
 LL=4;
 IG = zeros(1,LL-1);
