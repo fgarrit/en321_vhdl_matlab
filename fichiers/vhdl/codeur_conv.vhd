@@ -1,4 +1,3 @@
-----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_std.all;
@@ -7,7 +6,7 @@ entity codeur_conv is
 	port(
 		iClock       : in	std_logic;
 		iReset       : in	std_logic;
-		iEN	    	 : in	std_logic;
+		iEN	    	   : in	std_logic;
 		iData        : in	std_logic;
 		oDataX       : out std_logic;
 		oDataY       : out std_logic

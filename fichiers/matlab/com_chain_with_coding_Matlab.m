@@ -179,28 +179,28 @@ while(mod((length(V_mac_padd)*bch_n/bch_k)*2 + padding_mac,NFFT) ~= 0 || (mod((l
     padding_mac = padding_mac + 1;
 end
 
-%% Write UART
-s = send_UART(V_mac_padd,V_mac_padd_size)
+% %% Write UART
+% s = send_UART(V_mac_padd,V_mac_padd_size)
 
-% %% Scrambler MAC
-% S_mac=step(Scrambler_U_obj_mac,V_mac_padd.');
-% 
-% % BCH Encoder MAC
-% X_gf_mac = bchenc(gf(reshape(S_mac, bch_k, bch_cwd_nb_mac).',1), bch_n, bch_k); % codeur BCH(bch_n,bch_k)
-% X_mac = double( X_gf_mac.x );
-% 
-% 
-% % Interleaver MAC
-% P_mac=convintrlv([reshape(X_mac.',1,[])],intlvr_line_nb,intlvr_reg_size);
-% 
-% % Convolutionnal Encoder
-% C_mac = convenc(P_mac,trellis); 
+%% Scrambler MAC
+S_mac=step(Scrambler_U_obj_mac,V_mac_padd.');
+
+% BCH Encoder MAC
+X_gf_mac = bchenc(gf(reshape(S_mac, bch_k, bch_cwd_nb_mac).',1), bch_n, bch_k); % codeur BCH(bch_n,bch_k)
+X_mac = double( X_gf_mac.x );
 
 
-% Read UART
-C_hard_mac = recv_UART(s, bch_bit_nb_mac);
-C_hard_mac = reshape(de2bi(C_hard_mac)',1,[]);
-C_mac= C_hard_mac;
+% Interleaver MAC
+P_mac=convintrlv([reshape(X_mac.',1,[])],intlvr_line_nb,intlvr_reg_size);
+
+% Convolutionnal Encoder
+C_mac = convenc(P_mac,trellis); 
+
+
+% % Read UART
+% C_hard_mac = recv_UART(s, bch_bit_nb_mac);
+% C_hard_mac = reshape(de2bi(C_hard_mac)',1,[]);
+% C_mac= C_hard_mac;
 
 % Padding
 padding_add_mac = zeros(1,padding_mac);
@@ -227,26 +227,26 @@ end
 
 
 
-%% Write UART
-s = send_UART(V_soft,V_soft_size)
+% %% Write UART
+% s = send_UART(V_soft,V_soft_size)
 
-% Scrambler
+%% Scrambler
 S_soft=step(Scrambler_U_obj,V_soft.');
 
-% BCH Encoder
+%% BCH Encoder
 X_gf_soft = bchenc(gf(reshape(S_soft, bch_k, bch_cwd_nb).',1), bch_n, bch_k); % codeur BCH(bch_n,bch_k)
 X_soft = double( X_gf_soft.x );
 
-% Interleaver
+%% Interleaver
 P_soft=convintrlv([reshape(X_soft.',1,[])],intlvr_line_nb,intlvr_reg_size);
 
-% Convolutionnal Encoder
+%% Convolutionnal Encoder
 C_soft = convenc(P_soft,trellis);
 
-% Read UART
-C_hard = recv_UART(s, bch_bit_nb);
-C_hard = reshape(de2bi(C_hard)',1,[]);
-C_soft= C_hard;
+% % Read UART
+% C_hard = recv_UART(s, bch_bit_nb);
+% C_hard = reshape(de2bi(C_hard)',1,[]);
+% C_soft= C_hard;
 
 %%Padding
 padding_add = rand(1,padding) > 0.5;
@@ -339,7 +339,7 @@ trellis_depth=42; % profondeur du trellis
 
 P_r_mac = vitdec(C_r_mac,trellis,trellis_depth,'trunc','hard');
 
-%BER_U_A_Viterbi_mac = mean(abs(P_mac-P_r_mac))
+BER_U_A_Viterbi_mac = mean(abs(P_mac-P_r_mac))
 
 
 %% Deinterleaving
@@ -364,11 +364,11 @@ S_r_mac_Depad=step(Descrambler_U_obj,S_r_mac_Depad.'); % descrambler
 %% Depadding
 S_r_mac_Depad_final = fliplr(S_r_mac_Depad(1:25));
 
-%BER_U_MAC = mean(abs(S_r_mac_Depad_final-uint8(V_mac')));
+BER_U_MAC = mean(abs(S_r_mac_Depad_final-uint8(V_mac')));
 
 disp('--------------------------------------------------------------------')
 
-%fprintf('BER FINAL MAC : %d \n',BER_U_MAC)
+fprintf('BER FINAL MAC : %d \n',BER_U_MAC)
 
 disp('--------------------------------------------------------------------')
 
@@ -441,7 +441,7 @@ trellis_depth=42; % profondeur du trellis
 
 P_r_soft = vitdec(C_r_soft,trellis,trellis_depth,'trunc','hard');
 
-%BER_U_A_Viterbi = mean(abs(P_soft-P_r_soft))
+BER_U_A_Viterbi = mean(abs(P_soft-P_r_soft))
 
 
 %% Deinterleaving
@@ -511,10 +511,10 @@ title('diff des images')
 
 %% BER results
 disp('--------------------------------------------------------------------')
-%fprintf('SNR at the receiver side : %d dB\n',round(Prx_dB-N0dB))
+fprintf('SNR at the receiver side : %d dB\n',round(Prx_dB-N0dB))
 disp('--------------------------------------------------------------------')
 
-%fprintf('BER after Viterbi decoding: %d\n',(BER_U_A_Viterbi))
-%fprintf('BER after BCH : %d\n',(BER_U))
+fprintf('BER after Viterbi decoding: %d\n',(BER_U_A_Viterbi))
+fprintf('BER after BCH : %d\n',(BER_U))
 disp('--------------------------------------------------------------------')
 
